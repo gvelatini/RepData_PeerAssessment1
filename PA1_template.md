@@ -10,7 +10,7 @@ require(dplyr)
 
 The data that is used in this analysis is contained in the data set "activity.csv"
 
-This analysis makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
+This analysis makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual (John Doe) collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
 
 The original data set contains 17568 observations of 3 variables.
 
@@ -83,6 +83,13 @@ gp + geom_histogram(binwidth = 1000, fill = "pink", color =" black") + ggtitle("
 
 
 
+```r
+# calculate The mean and median number of steps taken per day 
+
+mn <- mean(mmt$total)
+mn<- format(mn, digits = 4, nsmall=1)
+md <-median(mmt$total)
+```
 
 ####The mean number of steps is 10766.2
 ####The median number of steps is 10765
@@ -91,12 +98,20 @@ gp + geom_histogram(binwidth = 1000, fill = "pink", color =" black") + ggtitle("
 ## What is the average daily activity pattern?
 
 ####The plot below displays the average number of steps taken at each 5 minute time interval.
+
+```r
+# group data by time interval and calculate mean of each interval
+
+int_dat <- group_by(act_dat2, interval) %>% summarize(mean = mean(steps))
+plot(int_dat, type="l", main = "Average Number of Steps vs. Time", xlab="Time", ylab="Averege Steps")
+```
+
 ![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
 
 
 
 
-####The  time interval containing the maximum average number of steps is 104
+####The  time interval containing the maximum average number of steps is 835
 
 ## Imputing missing values
 
@@ -160,17 +175,6 @@ dat_imp$days <- weekdays(as.Date(dat_imp$date, format = "%Y-%m-%d"))
 dat_imp$days <- factor(dat_imp$days, levels= c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
 
 dat_imp <- dat_imp[order(dat_imp$days),  ]
-head(dat_imp)
-```
-
-```
-##      steps       date interval   days
-## 1729     0 2012-10-07        0 Sunday
-## 1730     0 2012-10-07        5 Sunday
-## 1731     0 2012-10-07       10 Sunday
-## 1732     0 2012-10-07       15 Sunday
-## 1733     0 2012-10-07       20 Sunday
-## 1734     0 2012-10-07       25 Sunday
 ```
 
 
@@ -178,34 +182,6 @@ head(dat_imp)
 # calculate mean, median, and total # of steps taken per day for imputed data
 
 mmt_imp <- group_by(dat_imp, date) %>% summarize(mean = mean(steps), median = median(steps), total = sum(steps))
-head(mmt_imp, n=20)
-```
-
-```
-## Source: local data frame [20 x 4]
-## 
-##          date     mean   median     total
-##        (fctr)    (dbl)    (dbl)     (dbl)
-## 1  2012-10-01 34.63492 34.63492  9974.857
-## 2  2012-10-02  0.43750  0.00000   126.000
-## 3  2012-10-03 39.41667  0.00000 11352.000
-## 4  2012-10-04 42.06944  0.00000 12116.000
-## 5  2012-10-05 46.15972  0.00000 13294.000
-## 6  2012-10-06 53.54167  0.00000 15420.000
-## 7  2012-10-07 38.24653  0.00000 11015.000
-## 8  2012-10-08 34.63492 34.63492  9974.857
-## 9  2012-10-09 44.48264  0.00000 12811.000
-## 10 2012-10-10 34.37500  0.00000  9900.000
-## 11 2012-10-11 35.77778  0.00000 10304.000
-## 12 2012-10-12 60.35417  0.00000 17382.000
-## 13 2012-10-13 43.14583  0.00000 12426.000
-## 14 2012-10-14 52.42361  0.00000 15098.000
-## 15 2012-10-15 35.20486  0.00000 10139.000
-## 16 2012-10-16 52.37500  0.00000 15084.000
-## 17 2012-10-17 46.70833  0.00000 13452.000
-## 18 2012-10-18 34.91667  0.00000 10056.000
-## 19 2012-10-19 41.07292  0.00000 11829.000
-## 20 2012-10-20 36.09375  0.00000 10395.000
 ```
 #### The histogram below displays the number of steps each day for the IMPUTED data set
 
@@ -299,4 +275,4 @@ gp <- ggplot(dat_imp_int, aes(x = interval, y = mean, color = wkdy))
 ![](PA1_template_files/figure-html/unnamed-chunk-15-1.png) 
 
 
-The above plots show that the weekdays have a strong peak in the number of steps earlier in the day on weekdays, with significantly lower activity elsewhere.  On weekends, however,  the number of steps is much more consistent over the active period(s) of the day.  It looks like John DOe sleeps in a little on weekesnds, as well. :)
+The above plots show that the weekdays have a strong peak in the number of steps earlier in the day on weekdays, with significantly lower activity elsewhere.  On weekends, however,  the number of steps is much more consistent over the active period(s) of the day.  It looks like John Doe sleeps in a little on weekends, as well. :)
